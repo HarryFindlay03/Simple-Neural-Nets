@@ -47,7 +47,7 @@ def model_accuracy(predictions):
         if predictions[i] == dataset[i][-1]:
             count += 1
 
-    return count / len(predictions)
+    return count / len(dataset) * 100
 
 def perceptron_train(dataset, z, starting_threshold, iters):
     # returns weights for the input values
@@ -93,13 +93,20 @@ def main():
 
     weights, threshold = perceptron_train(dataset, learn_rate, starting_threshold, iters)
     
-    test_input = [7.627531214,2.759262235]
-    inputs = []
-    for i in range(0, len(weights)):
-        inputs.append((weights[i], test_input[i]))
+    test_inputs = []
+    for i in range(0, len(dataset)):
+        test_inputs.append(dataset[i][:-1])
+    
+    predictions = []
+    for i in range(0, len(test_inputs)):
+        inputs = []
+        for j in range(0, len(weights)):
+            inputs.append((weights[j], test_inputs[i][j]))
+        output = perceptron_output(inputs, threshold)
+        predictions.append(output)
 
-    output = perceptron_output(inputs, threshold)
-    print(f'OUTPUT: {output}')
+    acc = model_accuracy(predictions)
 
+    print(f'Accuracy: {acc}')
 
 main()
