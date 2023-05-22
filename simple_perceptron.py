@@ -34,20 +34,17 @@ image_dataset = [ [-1.0,-1.0,-1.0,-1.0,-1.0], # 1
 def sigmoid(x):
     return 1 / (1 + math.pow(math.e, -(x)))
 
-def weighted_sum(inputs):
-    # input[i][0] = weight
-    # input[i][1] = activation
-
+def weighted_sum(inputs, weights):
     ans = 0
     for i in range(0, len(inputs)):
-        ans += (inputs[i][0] * inputs[i][1])
+        ans += (weights[i] * inputs[i])
 
     return ans
 
-def perceptron_output(inputs, threshold):
+def perceptron_output(inputs, weights, threshold):
     # computes weighted sum of inputs
     # then applies activation function
-    w_sum = weighted_sum(inputs)
+    w_sum = weighted_sum(inputs, weights)
     
     # sigmoid activation function
     output = sigmoid(w_sum)
@@ -79,17 +76,13 @@ def perceptron_train(dataset, z, starting_threshold, iters):
     weights = []
     for _ in range(0, len(dataset[0])-1):
         weights.append(random.random())
-
-    accuracy = 0
+    
+    accuracy = 0 # this value is unused -> dataset to easy to train num of iterations very low
     n = 0
     while(accuracy <= 95 and n < iters):
         for i in range(0, len(dataset)):
-            # get perceptron output
-            inputs = []
-            for j in range(0, len(dataset[0])-1):
-                inputs.append((weights[j], dataset[i][j]))
-
-            p_out = perceptron_output(inputs, threshold)
+            # removing the last value from the dataset - last value is the output
+            p_out = perceptron_output(dataset[i][0:-1], weights, threshold)
 
             for j in range(0, len(weights)):
                 # update weights
@@ -97,7 +90,7 @@ def perceptron_train(dataset, z, starting_threshold, iters):
 
                 # update threshold
                 threshold = threshold - z * (dataset[i][-1] - p_out)
-
+        
         n += 1
 
     return (weights, threshold)
@@ -117,11 +110,9 @@ def main():
         test_inputs.append(dataset_to_use[i][:-1])
     
     predictions = []
+
     for i in range(0, len(test_inputs)):
-        inputs = []
-        for j in range(0, len(weights)):
-            inputs.append((weights[j], test_inputs[i][j]))
-        output = perceptron_output(inputs, threshold)
+        output = perceptron_output(test_inputs[i], weights, threshold)
         predictions.append(output)
 
     acc = model_accuracy(predictions, dataset_to_use)
