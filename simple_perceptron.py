@@ -16,6 +16,21 @@ dataset = [[2.7810836,2.550537003,0],
 	[8.675418651,-0.242068655,1],
 	[7.673756466,3.508563011,1]]
 
+image_dataset = [ [-1.0,-1.0,-1.0,-1.0,-1.0], # 1
+	        [-1.0,-1.0,-1.0, 1.0,-1.0], # 2
+	        [-1.0,-1.0, 1.0,-1.0,-1.0], # 3
+	        [-1.0, 1.0,-1.0,-1.0,-1.0], # 4
+	        [ 1.0,-1.0,-1.0,-1.0,-1.0], # 5
+	        [-1.0,-1.0, 1.0, 1.0, 1.0], # 6
+	        [-1.0, 1.0, 1.0,-1.0, 1.0], # 7
+	        [ 1.0, 1.0,-1.0,-1.0, 1.0], # 8
+	        [ 1.0,-1.0,-1.0, 1.0, 1.0], # 9
+	        [-1.0, 1.0, 1.0, 1.0, 1.0], # 10
+	        [ 1.0, 1.0, 1.0,-1.0, 1.0], # 11
+	        [ 1.0, 1.0,-1.0, 1.0, 1.0], # 12
+	        [ 1.0,-1.0, 1.0, 1.0, 1.0], # 13
+	        [ 1.0, 1.0, 1.0, 1.0, 1.0]] # 14
+
 def sigmoid(x):
     return 1 / (1 + math.pow(math.e, -(x)))
 
@@ -36,12 +51,14 @@ def perceptron_output(inputs, threshold):
     
     # sigmoid activation function
     output = sigmoid(w_sum)
+
+    # output needs to change depending on desired output classification
     if output < threshold:
-        return 0
+        return -1
     else:
         return 1
 
-def model_accuracy(predictions):
+def model_accuracy(predictions, dataset):
     count = 0
     for i in range(0, len(predictions)):
         if predictions[i] == dataset[i][-1]:
@@ -88,14 +105,16 @@ def perceptron_train(dataset, z, starting_threshold, iters):
 
 def main():
     learn_rate = 0.03
-    iters = 1000
+    iters = 10
     starting_threshold = 0.5
 
-    weights, threshold = perceptron_train(dataset, learn_rate, starting_threshold, iters)
+    dataset_to_use = image_dataset # change this to change dataset
+
+    weights, threshold = perceptron_train(dataset_to_use, learn_rate, starting_threshold, iters)
     
     test_inputs = []
-    for i in range(0, len(dataset)):
-        test_inputs.append(dataset[i][:-1])
+    for i in range(0, len(dataset_to_use)):
+        test_inputs.append(dataset_to_use[i][:-1])
     
     predictions = []
     for i in range(0, len(test_inputs)):
@@ -105,7 +124,7 @@ def main():
         output = perceptron_output(inputs, threshold)
         predictions.append(output)
 
-    acc = model_accuracy(predictions)
+    acc = model_accuracy(predictions, dataset_to_use)
 
     print(f'Accuracy: {acc}')
 
