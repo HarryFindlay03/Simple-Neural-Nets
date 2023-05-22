@@ -1,7 +1,5 @@
 #### SIMPLE PERCEPTRON MODEL ###
 
-# TODO -> threshold value - probably start it randomly
-
 import math
 import random 
 
@@ -73,11 +71,13 @@ def perceptron_train(dataset, z, starting_threshold, iters):
     
     # initialising weights to be a real number between 0 and 1
     threshold = starting_threshold
-    weights = []
+
+    # TODO -> look at bias weights
+    weights = [] 
     for _ in range(0, len(dataset[0])-1):
         weights.append(random.random())
     
-    accuracy = 0 # this value is unused -> dataset to easy to train num of iterations very low
+    accuracy = 0 # this value is unused -> dataset to easy to train, num of iterations very low
     n = 0
     while(accuracy <= 95 and n < iters):
         for i in range(0, len(dataset)):
@@ -116,7 +116,10 @@ def main():
         predictions.append(output)
 
     acc = model_accuracy(predictions, dataset_to_use)
-
+    
+    for i in range(0, len(weights)):
+        print(f'weights[{i}]: {weights[i]}', end="\t")
+    print(f'\nThreshold: {threshold}')
     print(f'Accuracy: {acc}')
 
 main()
